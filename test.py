@@ -9,13 +9,13 @@ class Bet:
 
 
 def create_problem(bets):
-	lp_vars = []
+	lp_vars = {}
 
 	problem = pulp.LpProblem("Problem", LpMaximize)
 
 	for b in bets:
-		lp_vars.append(pulp.LpVariable(b.name, lowBound=0, cat='Integer'))
-	lp_vars.append(pulp.LpVariable('profit', lowBound=0, cat='Continuous'))
+		lp_vars[b.name] = pulp.LpVariable(b.name, lowBound=0, cat='Integer')
+	lp_vars["profit"] = pulp.LpVariable('profit', lowBound=0, cat='Continuous')
 
 
 
