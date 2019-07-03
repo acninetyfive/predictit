@@ -1,10 +1,9 @@
 import numpy as np
 import pulp
-import urllib.request, json 
+import json 
+import requests
+from requests.exceptions import HTTPError
 
-
-data = json.load(open("all.json"))
-#print(data)
 
 class Market:
 	def __init__(self, data):
@@ -63,8 +62,25 @@ def find_negative_risk(markets):
 	return negative_risk_markets
 
 
+url = "https://www.predictit.org/api/marketdata/all/"
+try:
+	response = requests.get(url)
 
+	# If the response was successful, no Exception will be raised
+	response.raise_for_status()
+except HTTPError as http_err:
+	print(f'HTTP error occurred: {http_err}')  # Python 3.6
+except Exception as err:
+	print(f'Other error occurred: {err}')  # Python 3.6
+else:
+	print('Success!')
 
+data = json.loads(response.content)
 
-x_contract = Contract("x", .98)
-y_contract = Contract("y", .01)
+markets = load_markets(data)
+
+nr = find_negative_risk(markets)
+
+for item in nr:
+	if nr[item].objective.value() > 0:
+		print(item, nr[item].objective.value())
