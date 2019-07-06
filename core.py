@@ -43,11 +43,12 @@ def create_problem(market):
 			expr = pulp.LpAffineExpression([(lp_vars[x], market.contracts[x].profit) if x != v else (lp_vars[x], -1 * market.contracts[x].cost) for x in lp_vars] + [(profit, -1)])
 			c = pulp.LpConstraint(expr, 1) #1 indicates the expression should be >= 0
 			problem += c
+			problem += lp_vars[v] * market.contracts[v].cost <= 850 
 
-	max_profit = pulp.LpAffineExpression([(lp_vars[x], market.contracts[x].profit) for x in lp_vars])
-	max_profit += -850
-	c = pulp.LpConstraint(max_profit, -1) 
-	problem += c
+	#max_profit = pulp.LpAffineExpression([(lp_vars[x], market.contracts[x].profit) for x in lp_vars])
+	#max_profit += -850
+	#c = pulp.LpConstraint(max_profit, -1) 
+	#problem += c
 
 	return problem
 
@@ -84,3 +85,6 @@ nr = find_negative_risk(markets)
 for item in nr:
 	if nr[item].objective.value() > 0:
 		print(item, nr[item].objective.value())
+		for v in nr[item].variables():
+			print(v, v.value())
+	print()
